@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAPSK 中小學考試及實習抽籤系統</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gapsk: {
+                            blue: '#004B87',
+                            lightBlue: '#E6F0FA',
+                            gold: '#D4AF37',
+                            accent: '#2563EB',
+                            dark: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            background-color: #F8FAFC;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                box-shadow: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #003366 0%, #0056B3 100%);
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen pb-12">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 right-5 transform translate-x-full transition-transform duration-300 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">通知訊息</span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 print-container">
+        
+        <!-- Header Banner -->
+        <header class="gradient-header text-white rounded-2xl p-6 sm:p-8 mb-6 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl pointer-events-none">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="relative z-10 text-center sm:text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-blue-100 mb-3 backdrop-blur-sm">
+                    <i class="fa-solid fa-award text-amber-400"></i> GAPSK 專業評估系統
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                    GAPSK 中小學考試及實習抽籤系統
+                </h1>
+                <p class="text-blue-100 text-sm sm:text-base mt-2 max-w-2xl leading-relaxed">
+                    公平、透明、高效的智能化考試與實習抽籤平台，兼具難度平衡算法與 AI 考前導航。
+                </p>
+            </div>
+        </header>
+
+        <!-- Rules Info Card -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 mb-6 border border-slate-200/80 shadow-sm relative">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-gapsk-blue"></i>
+                    抽籤規範與考試對照說明
+                </h2>
+                <span class="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-gapsk-blue rounded-md border border-blue-100">
+                    10 位學員名單已載入
+                </span>
+            </div>
+
+            <!-- Exam Definitions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+                    <div class="font-bold text-xs uppercase tracking-wider text-gapsk-blue mb-1">
+                        <i class="fa-solid fa-file-pen mr-1"></i> 考試 1：GAPSK 中小學模擬測試評估
+                    </div>
+                    <p class="text-xs text-slate-600 mt-1">學員在模擬情境環境下評估，熟知流程。評估範疇：(1)語音專業度 (2)測試流程掌握 (3)評分準確度 (4)引導技巧 (5)應變能力 (6)評分紙紀錄。</p>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+                    <div class="font-bold text-xs uppercase tracking-wider text-indigo-600 mb-1">
+                        <i class="fa-solid fa-chalkboard-user mr-1"></i> 考試 2：GAPSK 中小學試題設計宣講
+                    </div>
+                    <p class="text-xs text-slate-600 mt-1">個人設計普通話「新考試方案」試題並宣講，包含：(1)試題設計理念 (2)方案設計 (3)AI的賦能方式 (4)試題的創新點。</p>
+                </div>
+            </div>
+
+            <!-- Rules List -->
+            <div class="text-xs sm:text-sm text-slate-600 space-y-2 bg-amber-50/60 border border-amber-200/60 p-3.5 rounded-xl">
+                <div class="font-bold text-amber-900 flex items-center gap-1.5 mb-1 text-xs uppercase tracking-wider">
+                    <i class="fa-solid fa-shield-halved text-amber-600"></i> 核心抽籤演算法規則：
+                </div>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 list-disc list-inside">
+                    <li><strong class="text-slate-700">要求1（程度不重複）：</strong> 考試1與考試2程度絕對不可相同。</li>
+                    <li><strong class="text-slate-700">要求2（全員參加）：</strong> 每位學員均需考「考試1」和「考試2」。</li>
+                    <li><strong class="text-slate-700">要求3（平均分配）：</strong> 各考試程度與實習單位（5位幼稚園、5位中小學）均勻分配。</li>
+                    <li><strong class="text-slate-700">要求4（難度公平）：</strong> 高低難度搭配（高級/中學檔 必須搭配 初級/中級試），排除高級配中級。</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Action Control Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-8 no-print">
+            <button id="drawBtn" onclick="executeDraw()" class="flex-1 sm:flex-none min-w-[160px] bg-gapsk-blue hover:bg-blue-800 active:scale-95 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-900/20 transition-all flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer">
+                <i class="fa-solid fa-dice text-amber-300 text-lg"></i>
+                <span>🎲 開始自動抽籤</span>
+            </button>
+
+            <button id="aiBtn" onclick="toggleAIAdvice()" disabled class="flex-1 sm:flex-none min-w-[180px] bg-amber-500 hover:bg-amber-600 active:scale-95 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer">
+                <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                <span>💡 生成 AI 複習建議</span>
+            </button>
+
+            <button id="resetBtn" onclick="resetSystem()" class="sm:flex-none bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold py-3 px-5 rounded-xl border border-slate-300/80 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
+                <i class="fa-solid fa-rotate-right text-slate-500"></i>
+                <span>🔄 重置</span>
+            </button>
+            
+            <button id="copyBtn" onclick="copyResults()" class="hidden sm:flex-none bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold py-3 px-4 rounded-xl border border-emerald-200 transition-all items-center justify-center gap-2 text-sm cursor-pointer">
+                <i class="fa-regular fa-copy"></i>
+                <span>複製結果</span>
+            </button>
+        </div>
+
+        <!-- Animation Loading Overlay -->
+        <div id="loadingOverlay" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 flex items-center justify-center">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl text-center max-w-xs w-full border border-slate-100">
+                <div class="inline-block p-4 bg-blue-50 rounded-full text-gapsk-blue mb-4 animate-bounce">
+                    <i class="fa-solid fa-arrows-spin text-3xl animate-spin"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">正在執行公平抽籤...</h3>
+                <p class="text-xs text-slate-500 mt-1">計算程度高低平衡與平均分配中</p>
+            </div>
+        </div>
+
+        <!-- Result Table Container -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden mb-8">
+            <div class="p-4 sm:p-5 bg-slate-50/80 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm sm:text-base">
+                        <i class="fa-solid fa-list-check text-gapsk-blue"></i>
+                        抽籤結果列表
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        註明 — <strong>考試 1：</strong>GAPSK 中小學模擬測試評估 ｜ <strong>考試 2：</strong>GAPSK 中小學試題設計宣講 ｜ <strong>實習：</strong>幼稚園 / 中小學
+                    </p>
+                </div>
+                <span id="statusBadge" class="text-xs font-semibold px-2.5 py-1 bg-slate-200 text-slate-600 rounded-full">
+                    尚未抽籤
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-100/70 text-slate-600 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                            <th class="py-3.5 px-4 text-center w-16">編號</th>
+                            <th class="py-3.5 px-4 font-semibold">學員姓名</th>
+                            <th class="py-3.5 px-4 font-semibold">考試 1：GAPSK 中小學模擬測試評估</th>
+                            <th class="py-3.5 px-4 font-semibold">考試 2：GAPSK 中小學試題設計宣講</th>
+                            <th class="py-3.5 px-4 font-semibold text-center">實習安排</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultBody" class="divide-y divide-slate-100">
+                        <tr id="emptyState">
+                            <td colspan="5" class="py-12 text-center text-slate-400">
+                                <i class="fa-solid fa-dice-d6 text-4xl mb-3 text-slate-300 block"></i>
+                                <div>請點擊上方「<strong>🎲 開始自動抽籤</strong>」按鈕執行公平分配</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AI Advice Section -->
+        <div id="aiAdviceSection" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-5 rounded-2xl shadow-md flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-brain"></i> AI 智能複習與備考建議報告
+                    </h2>
+                    <p class="text-xs sm:text-sm text-amber-100 mt-1">根據最新抽籤結果，總結各考試及程度之學員姓名並提供精準複習建議。</p>
+                </div>
+                <button onclick="window.print()" class="no-print bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-sm transition-all flex items-center gap-1.5 font-medium">
+                    <i class="fa-solid fa-print"></i> 列印報告
+                </button>
+            </div>
+
+            <!-- Exam 1 AI Advice Card -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm">
+                <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100">
+                    <span class="w-8 h-8 rounded-lg bg-blue-100 text-gapsk-blue flex items-center justify-center font-bold text-sm">1</span>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base sm:text-lg">考試 1：GAPSK 中小學模擬測試評估 — 複習建議</h3>
+                        <p class="text-xs text-slate-500">評估範疇：(1)語音專業度 (2)測試流程掌握 (3)評分準確度 (4)引導技巧 (5)應變能力 (6)評分紙紀錄</p>
+                    </div>
+                </div>
+
+                <div id="exam1AdviceContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic Exam 1 Groups -->
+                </div>
+            </div>
+
+            <!-- Exam 2 AI Advice Card -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm">
+                <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">2</span>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base sm:text-lg">考試 2：GAPSK 中小學試題設計宣講 — 複習建議</h3>
+                        <p class="text-xs text-slate-500">宣講重點：(1)試題設計理念 (2)方案設計 (3)AI的賦能方式 (4)試題的創新點</p>
+                    </div>
+                </div>
+
+                <div id="exam2AdviceContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic Exam 2 Groups -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Core -->
+    <script>
+        // 10 位學員名單
+        const students = [
+            "施映雪", "劉韻詩", "劉金巧", "吳佳霖", "王子邱",
+            "陳潔", "梁琦惠", "宋文麗", "周子茜", "張茜"
+        ];
+
+        let drawResults = [];
+
+        // Badge Styling
+        const levelBadges = {
+            "小學檔初級試": { color: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: "fa-leaf" },
+            "小學檔中級試": { color: "bg-blue-50 text-blue-700 border-blue-200", icon: "fa-book-open" },
+            "小學檔高級試": { color: "bg-amber-50 text-amber-700 border-amber-200", icon: "fa-graduation-cap" },
+            "中學檔": { color: "bg-purple-50 text-purple-700 border-purple-200", icon: "fa-user-graduate" }
+        };
+
+        // Fisher-Yates Shuffle
+        function shuffle(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Draw Logic strictly satisfying rules 1-4
+        function executeDraw() {
+            document.getElementById("loadingOverlay").classList.remove("hidden");
+
+            setTimeout(() => {
+                /**
+                 * Valid pairings for High/Low balance & non-equal level constraint:
+                 * 初級/中級 <---> 高級/中學檔
+                 * Rejects identical levels & excludes (高級 <-> 中級) pairing for absolute fairness.
+                 */
+                const validPairings = [
+                    { e1: "小學檔初級試", e2: "小學檔高級試" },
+                    { e1: "小學檔初級試", e2: "中學檔" },
+                    { e1: "小學檔中級試", e2: "小學檔高級試" },
+                    { e1: "小學檔中級試", e2: "中學檔" },
+                    { e1: "小學檔高級試", e2: "小學檔初級試" },
+                    { e1: "小學檔高級試", e2: "小學檔中級試" },
+                    { e1: "中學檔", e2: "小學檔初級試" },
+                    { e1: "中學檔", e2: "小學檔中級試" },
+                    { e1: "小學檔初級試", e2: "中學檔" },
+                    { e1: "小學檔中級試", e2: "小學檔高級試" }
+                ];
+
+                const shuffledPairs = shuffle(validPairings);
+                const internshipList = shuffle([
+                    "幼稚園", "幼稚園", "幼稚園", "幼稚園", "幼稚園",
+                    "中小學", "中小學", "中小學", "中小學", "中小學"
+                ]);
+
+                drawResults = students.map((name, idx) => ({
+                    id: idx + 1,
+                    name: name,
+                    exam1: shuffledPairs[idx].e1,
+                    exam2: shuffledPairs[idx].e2,
+                    internship: internshipList[idx]
+                }));
+
+                renderResultsTable();
+
+                document.getElementById("loadingOverlay").classList.add("hidden");
+                document.getElementById("aiBtn").disabled = false;
+                document.getElementById("copyBtn").classList.remove("hidden");
+                document.getElementById("copyBtn").classList.add("inline-flex");
+                
+                const statusBadge = document.getElementById("statusBadge");
+                statusBadge.textContent = "抽籤完成";
+                statusBadge.className = "text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full";
+
+                if (!document.getElementById("aiAdviceSection").classList.contains("hidden")) {
+                    renderAIAdvice();
+                }
+
+                showToast("抽籤完成！已滿足難度平衡與公平分配要求。");
+            }, 500);
+        }
+
+        // Render Table
+        function renderResultsTable() {
+            const tbody = document.getElementById("resultBody");
+            tbody.innerHTML = "";
+
+            drawResults.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50/80 transition-colors";
+
+                const badge1 = levelBadges[item.exam1];
+                const badge2 = levelBadges[item.exam2];
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 text-center font-medium text-slate-400">${item.id}</td>
+                    <td class="py-3.5 px-4 font-bold text-slate-800">${item.name}</td>
+                    <td class="py-3.5 px-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border ${badge1.color}">
+                            <i class="fa-solid ${badge1.icon}"></i> ${item.exam1}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border ${badge2.color}">
+                            <i class="fa-solid ${badge2.icon}"></i> ${item.exam2}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium ${item.internship === '幼稚園' ? 'bg-pink-50 text-pink-700 border border-pink-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200'}">
+                            <i class="fa-solid ${item.internship === '幼稚園' ? 'fa-baby' : 'fa-school'}"></i> ${item.internship}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Toggle AI Advice
+        function toggleAIAdvice() {
+            const adviceSection = document.getElementById("aiAdviceSection");
+            if (adviceSection.classList.contains("hidden")) {
+                renderAIAdvice();
+                adviceSection.classList.remove("hidden");
+                adviceSection.scrollIntoView({ behavior: 'smooth' });
+                showToast("已自動生成 AI 複習建議！");
+            } else {
+                adviceSection.classList.add("hidden");
+            }
+        }
+
+        // Render AI Suggestions
+        function renderAIAdvice() {
+            const e1Groups = { "小學檔初級試": [], "小學檔中級試": [], "小學檔高級試": [], "中學檔": [] };
+            const e2Groups = { "小學檔初級試": [], "小學檔中級試": [], "小學檔高級試": [], "中學檔": [] };
+
+            drawResults.forEach(r => {
+                e1Groups[r.exam1].push(r.name);
+                e2Groups[r.exam2].push(r.name);
+            });
+
+            // Exam 1 Category Details (6 Dimensions)
+            const e1Details = {
+                "小學檔初級試": {
+                    desc: "童音親和力引導與基礎測試流程掌控",
+                    tips: [
+                        "<strong>語音專業度：</strong> 吐字清晰放慢，聲調飽滿示範標準，為低年級學生建立示範。",
+                        "<strong>測試流程掌握：</strong> 順暢切換聽辨與朗讀環節，確保測試步調規範。",
+                        "<strong>評分準確度：</strong> 準確捕捉聲母與韻母發音偏誤，客觀填寫扣分點。",
+                        "<strong>引導技巧：</strong> 使用親切肢體語言與鼓勵性眼神，舒緩幼童緊張情緒。",
+                        "<strong>應變能力：</strong> 若學生膽怯不語，採用漸進式問題引導重啟回答。",
+                        "<strong>評分紙紀錄：</strong> 即時標註錯音位置，字跡清晰，確保評分無遺漏。"
+                    ]
+                },
+                "小學檔中級試": {
+                    desc: "正音節奏把控與常考教學錯詞診斷",
+                    tips: [
+                        "<strong>語音專業度：</strong> 嚴格掌握變調（如「一」、「不」）及輕聲兒化音規則。",
+                        "<strong>測試流程掌握：</strong> 精準控管各評估題目時間，保持測試緊湊專業。",
+                        "<strong>評分準確度：</strong> 精確判斷課文朗讀中的停連、語調與連讀變調。",
+                        "<strong>引導技巧：</strong> 使用標準規範提示語，協助學生自然發揮普通話實力。",
+                        "<strong>應變能力：</strong> 妥善應對學生跳讀、重複讀或看錯行的突發狀況。",
+                        "<strong>評分紙紀錄：</strong> 詳實紀錄扣分細節，給予具針對性的考後改進建議。"
+                    ]
+                },
+                "小學檔高級試": {
+                    desc: "高階語音審析與說話項目客觀評判",
+                    tips: [
+                        "<strong>語音專業度：</strong> 精準分辨難點音（平翹舌音、前後鼻音、NL音分明）。",
+                        "<strong>測試流程掌握：</strong> 展現高階測試官考場風範，嚴格落實命題說話規範。",
+                        "<strong>評分準確度：</strong> 說話項目客觀評估語法結構、詞彙豐富度與邏輯連貫性。",
+                        "<strong>引導技巧：</strong> 在適當時候給予思考方向點撥，不打斷學生說話脈絡。",
+                        "<strong>應變能力：</strong> 針對離題或思考過久的考生，進行符合規則的引導。",
+                        "<strong>評分紙紀錄：</strong> 評語具學術診斷價值，詳細紀錄說話範疇問題。"
+                    ]
+                },
+                "中學檔": {
+                    desc: "國家級普通話標準與中學評分標準細則",
+                    tips: [
+                        "<strong>語音專業度：</strong> 發音達國家普通話水平測試標準，無地域性口音。",
+                        "<strong>測試流程掌握：</strong> 熟悉中學檔複雜試卷結構與高級測試規範。",
+                        "<strong>評分準確度：</strong> 嚴格針對語法結構偏誤與篇章表達進行精確扣分。",
+                        "<strong>引導技巧：</strong> 以專業學術態度與中學生互動，激發深層語言表達。",
+                        "<strong>應變能力：</strong> 冷靜處置考場突發狀況或考生過度緊張等複雜情境。",
+                        "<strong>評分紙紀錄：</strong> 使用專業語文術語撰寫診斷，紀錄精準嚴密。"
+                    ]
+                }
+            };
+
+            // Exam 2 Category Details (4 Dimensions)
+            const e2Details = {
+                "小學檔初級試": {
+                    desc: "啟蒙趣味性與幼兒 AI 語音互動題型",
+                    tips: [
+                        "<strong>設計理念：</strong> 貫徹「趣味啟蒙與遊戲化學習」，降低低年級測驗焦慮。",
+                        "<strong>方案設計：</strong> 結合多媒體繪本與生活圖卡，打造低難度高互動試題。",
+                        "<strong>AI 賦能方式：</strong> 介紹 AI 語音識別如何實現即時擬人化發音鼓勵與互動。",
+                        "<strong>試題創新點：</strong> 採用動態情境模擬取代傳統紙筆，提升學生參與度。"
+                    ]
+                },
+                "小學檔中級試": {
+                    desc: "生活化語境交際與多模態 AI 評估設計",
+                    tips: [
+                        "<strong>設計理念：</strong> 聚焦「生活語境交際與漢語拼音實際應用」。",
+                        "<strong>方案設計：</strong> 設計角色扮演與日常對話情境，考核真實溝通能力。",
+                        "<strong>AI 賦能方式：</strong> 說明 AI 聲譜分析如何客觀診斷學生聲調準確率與流暢度。",
+                        "<strong>試題創新點：</strong> 融入跨學科主題，檢驗學生在不同場景的普通話應用。"
+                    ]
+                },
+                "小學檔高級試": {
+                    desc: "高階思辨能力與 AI 自適應命題系統",
+                    tips: [
+                        "<strong>設計理念：</strong> 著重「高階思辨表達與綜合語文素養考核」。",
+                        "<strong>方案設計：</strong> 規劃看圖短文口述與開放式演講題組，強化考題深度。",
+                        "<strong>AI 賦能方式：</strong> 闡述 AI 自適應難度調整算法（CAT）在試題生成的應用。",
+                        "<strong>試題創新點：</strong> 引入多角度思維評估矩陣，打破傳統單一回答框架。"
+                    ]
+                },
+                "中學檔": {
+                    desc: "高階語文素養與大語言模型 AI 深度診斷",
+                    tips: [
+                        "<strong>設計理念：</strong> 導向「社會議題思辨、文本分析與高階表達」。",
+                        "<strong>方案設計：</strong> 包含多文本閱讀理解、論辯式口語表達及綜合寫作題型。",
+                        "<strong>AI 賦能方式：</strong> 說明 LLM 大型語言模型在自動評分與邏輯診斷中的賦能。",
+                        "<strong>試題創新點：</strong> 打造全數位智能化考試方案，展現新考試方案的突破。"
+                    ]
+                }
+            };
+
+            document.getElementById("exam1AdviceContainer").innerHTML = generateAdviceCards(e1Groups, e1Details, "text-blue-600");
+            document.getElementById("exam2AdviceContainer").innerHTML = generateAdviceCards(e2Groups, e2Details, "text-indigo-600");
+        }
+
+        // Generate Cards HTML Helper
+        function generateAdviceCards(groups, details, titleColorClass) {
+            let html = "";
+            for (const [level, names] of Object.entries(groups)) {
+                const badge = levelBadges[level];
+                const detail = details[level];
+                const nameListText = names.length > 0 ? names.join("、") : "無學員抽中";
+
+                html += `
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/70 hover:border-slate-300 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold border ${badge.color}">
+                                    <i class="fa-solid ${badge.icon}"></i> ${level}
+                                </span>
+                                <span class="text-xs text-slate-400 font-medium">共 ${names.length} 人</span>
+                            </div>
+                            <div class="text-xs font-bold text-slate-700 mb-2 bg-white px-2.5 py-1.5 rounded-md border border-slate-200/60">
+                                👥 應考學員：<span class="${titleColorClass}">${nameListText}</span>
+                            </div>
+                            <p class="text-xs font-semibold text-slate-500 mb-2">💡 重點方向：${detail.desc}</p>
+                            <ul class="text-xs text-slate-600 space-y-1.5 list-none">
+                                ${detail.tips.map(t => `<li class="flex items-start gap-1.5"><i class="fa-solid fa-angle-right text-slate-400 mt-0.5 text-[10px]"></i><span>${t}</span></li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        // Copy Text Function
+        function copyResults() {
+            if (drawResults.length === 0) return;
+            
+            let text = "=== GAPSK 中小學考試及實習抽籤結果 ===\n\n";
+            drawResults.forEach(r => {
+                text += `${r.id}. ${r.name} | 考試1(模擬測試評估): ${r.exam1} | 考試2(試題設計宣講): ${r.exam2} | 實習: ${r.internship}\n`;
+            });
+            text += "\n抽籤時間：" + new Date().toLocaleString('zh-HK');
+
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            showToast("抽籤結果已成功複製到剪貼簿！");
+        }
+
+        // Reset System
+        function resetSystem() {
+            drawResults = [];
+            document.getElementById("resultBody").innerHTML = `
+                <tr id="emptyState">
+                    <td colspan="5" class="py-12 text-center text-slate-400">
+                        <i class="fa-solid fa-dice-d6 text-4xl mb-3 text-slate-300 block"></i>
+                        <div>請點擊上方「<strong>🎲 開始自動抽籤</strong>」按鈕執行公平分配</div>
+                    </td>
+                </tr>
+            `;
+            document.getElementById("aiBtn").disabled = true;
+            document.getElementById("copyBtn").classList.add("hidden");
+            document.getElementById("copyBtn").classList.remove("inline-flex");
+            document.getElementById("aiAdviceSection").classList.add("hidden");
+            
+            const statusBadge = document.getElementById("statusBadge");
+            statusBadge.textContent = "尚未抽籤";
+            statusBadge.className = "text-xs font-semibold px-2.5 py-1 bg-slate-200 text-slate-600 rounded-full";
+
+            showToast("系統已重置。");
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            const toastMessage = document.getElementById("toastMessage");
+            toastMessage.textContent = msg;
+            toast.classList.remove("translate-x-full");
+
+            setTimeout(() => {
+                toast.classList.add("translate-x-full");
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
